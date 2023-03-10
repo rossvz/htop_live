@@ -1,8 +1,8 @@
 <div class="bg-slate-900 h-screen">
   <div class="h-full flex flex-col items-center justify-center">
-    <%= for {metric, index} <- Enum.with_index(@cpu_per_core, 1) do %>
+    <%= for {cpu_name, usage} <- @cpu_per_core do %>
       <div class="h-4 w-3/4 bg-neutral-200 my-4 flex flex-row">
-        <div class="h-4 bg-green-500 " style={percent(metric)}>CPU <%= index %></div>
+        <div class="h-4 bg-green-500 " style={percent(usage)}>CPU <%= cpu_name %></div>
       </div>
     <% end %>
 
