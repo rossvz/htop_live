@@ -18,6 +18,14 @@ defmodule HtopWeb.Live.Metrics do
   end
 
   def handle_info({:cpu_per_core, cpu_per_core}, socket) do
+    cpu_per_core =
+      Enum.map(cpu_per_core, fn {name, usage} ->
+        case Integer.parse(usage) do
+          {usage, _} -> {name, usage}
+          _ -> {name, usage}
+        end
+      end)
+
     socket = assign(socket, cpu_per_core: cpu_per_core)
     {:noreply, socket}
   end
