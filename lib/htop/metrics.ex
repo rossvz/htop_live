@@ -15,11 +15,28 @@ defmodule Htop.Metrics do
 
   @impl true
   def init(_args) do
-    port = Port.open({:spawn, "top -n 1"}, [:binary])
-    {:ok, %{port: port}}
+    schedule_get_cpu()
+    # port = Port.open({:spawn, "top -n 1"}, [:binary])
+    # {:ok, %{port: port}}
+
+    {:ok, %{}}
   end
 
   @impl true
+  def handle_info(:get_cpu, state) do
+    cpu_per_core = Htop.SystemInfo.get_cpu()
+
+    Phoenix.PubSub.broadcast(
+      Htop.PubSub,
+      "metrics",
+      {:cpu_per_core, cpu_per_core}
+    )
+
+    schedule_get_cpu()
+
+    {:noreply, cpu_per_core}
+  end
+
   def handle_info({_, {:data, data}}, state) do
     data = parse_top_data(data)
 
@@ -40,6 +57,10 @@ defmodule Htop.Metrics do
   @impl true
   def handle_call({:get, key}, _payload, state) do
     {:reply, state[key], state}
+  end
+
+  defp schedule_get_cpu do
+    Process.send_after(self(), :get_cpu, 500)
   end
 
   defp parse_top_data(data) do

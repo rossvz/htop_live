@@ -8,12 +8,17 @@ defmodule HtopWeb.Live.Metrics do
   }
   def mount(_params, _session, socket) do
     Phoenix.PubSub.subscribe(Htop.PubSub, "metrics")
-    socket = assign(socket, cpu: @default)
+    socket = assign(socket, cpu_per_core: [])
     {:ok, socket}
   end
 
   def handle_info({:data, %{cpu: cpu}}, socket) do
     socket = assign(socket, cpu: cpu)
+    {:noreply, socket}
+  end
+
+  def handle_info({:cpu_per_core, cpu_per_core}, socket) do
+    socket = assign(socket, cpu_per_core: cpu_per_core)
     {:noreply, socket}
   end
 
