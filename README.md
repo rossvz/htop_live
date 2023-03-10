@@ -4,20 +4,26 @@ The goal for this mini-project is to get CPU stats showing in a LiveView Page
 # Approach
 - Spin up new phoenix live view project
 - Determine how to read CPU/system info
-- Create a stateful store of CPU metrics
-- Query for CPU state in LiveView
-- Bonus: broadcast cpu changes to connected LiveViews
+- Create a stateful store of CPU metrics, update on interval
+- Broadcast cpu changes to connected LiveViews
 
 # Update Phoenix new
 `mix archive.install hex phx_new`
 
 # Read CPU
 The big issue here was getting this data from Elixir environment.
+
+Current Approach:
+- Rust `sysinfo` crate allows us to get statistics.
+- In order to accurately read CPU usage, it needs to query CPU stats over an interval. This means we can't query directly from Elixir because it would be a long, blocking function call.
+- Without a ton of Rust understanding of async/thread stuff - my quick workaround is:
+  - Elixir starts an infinite loop in Rust, where we query the the CPU usage and write to a local file
+  - Elixir reads from this file on a short interval and updates UI
+
 Tried:
 - :os_mon from erlang will send alerts when CPU crosses an alert threshold. Not really what I want.
 - Some other suggestions involved :observer which doesn't work on my machine
-- Looked into using Rustler and the `sysinfo` crate. Rustler was actually really cool to get up and running. The main issue here is that sysinfo needs to poll over some interval to get an accurate measurement. In theory I could have a GenServer kick off the Rustler NIF which triggers like 2-3 runs of the sysinfo sample and then store that as state in Elixir, but that function call would take like 1-2 seconds which means CPU data would be delayed. The better option may be to investigate Tokio/async rust eventually
-- My preferred solution is currently using `Port` directly from elixir
+- Initial approach was using `Port` directly from elixir
 ```elixir
 
 port = Port.open({:spawn, "top"}, :binary)
