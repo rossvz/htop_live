@@ -13,7 +13,7 @@ defmodule Htop.Application do
       {Phoenix.PubSub, name: Htop.PubSub},
       {Finch, name: Htop.Finch},
       HtopWeb.Endpoint,
-      Htop
+      Htop.Metrics
     ]
 
     opts = [strategy: :one_for_one, name: Htop.Supervisor]
