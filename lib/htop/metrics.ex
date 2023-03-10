@@ -15,21 +15,32 @@ defmodule Htop.Metrics do
 
   @impl true
   def init(_args) do
-    schedule_get_cpu()
-    # port = Port.open({:spawn, "top -n 1"}, [:binary])
-    # {:ok, %{port: port}}
+    IO.puts("INIT")
 
+    Task.start(fn ->
+      Htop.SystemInfo.loop_cpu_check()
+    end)
+
+    schedule_get_cpu()
+    IO.puts("HERE?")
     {:ok, %{}}
   end
 
   @impl true
   def handle_info(:get_cpu, state) do
     cpu_per_core =
-      Htop.SystemInfo.get_cpu()
-      |> Enum.map(fn str ->
-        [name, usage] = String.split(str, ":")
-        {name, usage}
-      end)
+      case File.read("usage") do
+        {:ok, data} ->
+          data
+          |> String.split("\n", trim: true)
+          |> Enum.map(fn str ->
+            [name, usage] = String.split(str, ":")
+            {name, usage}
+          end)
+
+        {:error, _} ->
+          state
+      end
 
     Phoenix.PubSub.broadcast(
       Htop.PubSub,
