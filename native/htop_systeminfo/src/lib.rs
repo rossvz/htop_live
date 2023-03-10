@@ -1,3 +1,5 @@
+use std::{thread::sleep, time::Duration};
+
 use sysinfo::{CpuExt, System, SystemExt};
 
 #[rustler::nif]
@@ -33,7 +35,7 @@ fn refresh_cpus(mut sys: System, mut info: Info) {
 }
 
 #[rustler::nif]
-pub fn get_cpu() -> Vec<f32> {
+pub fn get_cpu() -> Vec<String> {
     let mut sys = System::new_all();
     // let _info = Info::new();
 
@@ -42,7 +44,12 @@ pub fn get_cpu() -> Vec<f32> {
     // refresh_cpus(sys, info)
 
     sys.refresh_cpu();
-    sys.cpus().iter().map(|c| c.cpu_usage()).collect()
+    sleep(Duration::from_millis(200));
+    sys.refresh_cpu();
+    sys.cpus()
+        .iter()
+        .map(|c| format!("{}:{:?}", c.name(), c.cpu_usage()))
+        .collect()
 }
 
 rustler::init!("Elixir.Htop.SystemInfo", [add, get_cpu]);

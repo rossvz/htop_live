@@ -24,7 +24,12 @@ defmodule Htop.Metrics do
 
   @impl true
   def handle_info(:get_cpu, state) do
-    cpu_per_core = Htop.SystemInfo.get_cpu()
+    cpu_per_core =
+      Htop.SystemInfo.get_cpu()
+      |> Enum.map(fn str ->
+        [name, usage] = String.split(str, ":")
+        {name, usage}
+      end)
 
     Phoenix.PubSub.broadcast(
       Htop.PubSub,
