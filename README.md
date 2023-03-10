@@ -1,5 +1,6 @@
 
 The goal for this mini-project is to get CPU stats showing in a LiveView Page
+![image](https://user-images.githubusercontent.com/9866589/224439140-06e1dc22-4c0d-4f14-b920-e59e465154a8.png)
 
 # Approach
 - Spin up new phoenix live view project
