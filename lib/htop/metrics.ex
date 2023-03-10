@@ -15,14 +15,9 @@ defmodule Htop.Metrics do
 
   @impl true
   def init(_args) do
-    IO.puts("INIT")
-
-    Task.start(fn ->
-      Htop.SystemInfo.loop_cpu_check()
-    end)
+    Htop.SystemInfo.loop_cpu_check()
 
     schedule_get_cpu()
-    IO.puts("HERE?")
     {:ok, %{}}
   end
 
