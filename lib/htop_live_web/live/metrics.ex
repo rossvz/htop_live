@@ -2,9 +2,9 @@ defmodule HtopWeb.Live.Metrics do
   use HtopWeb, :live_view
 
   @default %{
-    user: "0",
-    system: "0",
-    idle: "0"
+    user: "12.8",
+    system: "62.4",
+    idle: "24.8"
   }
   def mount(_params, _session, socket) do
     Phoenix.PubSub.subscribe(Htop.PubSub, "metrics")
@@ -17,19 +17,7 @@ defmodule HtopWeb.Live.Metrics do
     {:noreply, socket}
   end
 
-  def render(assigns) do
-    ~H"""
-    <div>
-      <div>
-        System: <%= @cpu.system %>
-      </div>
-      <div>
-        User: <%= @cpu.user %>
-      </div>
-      <div>
-        Idle: <%= @cpu.idle %>
-      </div>
-    </div>
-    """
+  defp percent(val) do
+    "transition: width 500ms ease-in-out; width: #{val}%"
   end
 end

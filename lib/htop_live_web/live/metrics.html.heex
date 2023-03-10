@@ -1,0 +1,9 @@
+<div class="bg-slate-900 h-screen">
+  <div class="h-full flex flex-col items-center justify-center">
+    <div class="h-4 w-3/4 bg-neutral-200 my-4 flex flex-row">
+      <div class="h-4 bg-green-500 " style={percent(@cpu.user)}>User</div>
+      <div class="h-4 bg-green-300 " style={percent(@cpu.system)}>System</div>
+      <div class="h-4 bg-green-100 " style={percent(@cpu.idle)}>Idle</div>
+    </div>
+  </div>
+</div>
